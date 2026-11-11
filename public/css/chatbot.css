@@ -1,0 +1,27 @@
+.ez-guide{position:fixed;right:22px;bottom:22px;z-index:20;color:#20392e;font-family:Inter,'Segoe UI',sans-serif}
+.ez-guide-toggle{display:flex;align-items:center;gap:9px;padding:11px 16px;border:1px solid #315e43;border-radius:999px;background:#315e43;color:#fffefa;box-shadow:0 10px 26px #18382d30;font-size:12px;font-weight:700;cursor:pointer;transition:transform .18s,box-shadow .18s,background .18s}
+.ez-guide-toggle:hover{transform:translateY(-2px);background:#274d37;box-shadow:0 13px 30px #18382d38}
+.guide-toggle-icon{font-size:15px;line-height:1}
+.ez-guide-panel{position:absolute;right:0;bottom:58px;display:flex;flex-direction:column;width:min(370px,calc(100vw - 28px));height:min(540px,calc(100dvh - 108px));overflow:hidden;border:1px solid #dce4d9;border-radius:17px;background:#fffefa;box-shadow:0 25px 75px #15291d35;animation:guide-in .18s ease-out}
+.ez-guide-panel[hidden]{display:none}
+.ez-guide-header{display:flex;align-items:center;gap:11px;padding:14px 16px;border-bottom:1px solid #ebeee8;background:#f8f8f2}
+.guide-avatar{display:grid;place-items:center;width:35px;height:35px;border-radius:11px;background:#284e39;color:#fffefa;font:700 20px Georgia,serif}
+.guide-title{display:grid;gap:3px;flex:1}.guide-title strong{font:600 16px Georgia,serif;color:#284533}.guide-title small{font-size:10px;color:#829084}
+.guide-close{border:0;background:transparent;color:#748277;font-size:24px;line-height:1;cursor:pointer}
+.ez-guide-notice{padding:7px 14px;background:#f2f5ee;color:#7d8b7d;font-size:9px;letter-spacing:.2px}
+.ez-guide-messages{display:flex;flex:1;flex-direction:column;gap:10px;overflow-y:auto;padding:16px 14px 10px;scroll-behavior:smooth}
+.guide-message{display:flex;width:100%}.guide-message.user{justify-content:flex-end}
+.guide-bubble{max-width:88%;padding:11px 12px;border:1px solid #e6ebe2;border-radius:12px 12px 12px 4px;background:#f7f8f2;color:#45574a;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.guide-message.user .guide-bubble{border-color:#dce8dc;border-radius:12px 12px 4px 12px;background:#eaf1e8;color:#284533}
+.guide-bubble a{color:#366a45;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.ez-guide-prompts{display:flex;flex-wrap:wrap;gap:6px;padding:4px 13px 10px}
+.guide-prompt{border:1px solid #dfe6dc;border-radius:999px;padding:6px 9px;background:#fffefa;color:#5c745f;font-size:9px;cursor:pointer;transition:background .15s,border .15s}
+.guide-prompt:hover{background:#eff4eb;border-color:#cbd9c9}
+.ez-guide-form{display:flex;gap:7px;padding:11px;border-top:1px solid #e8ece5;background:#fffefa}
+.ez-guide-form input{flex:1;min-width:0;height:39px;padding:0 12px;border:1px solid #dfe5db;border-radius:9px;background:#fffefa;color:#263b2d;font:inherit;font-size:12px;outline:0}
+.ez-guide-form input:focus{border-color:#6f9b73;box-shadow:0 0 0 3px #5c8a5e18}
+.ez-guide-form button{width:39px;height:39px;border:0;border-radius:9px;background:#315e43;color:white;font-size:20px;font-weight:700;cursor:pointer}
+@keyframes guide-in{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.dark-mode .ez-guide{color:#e3ebe3}.dark-mode .ez-guide-toggle{background:#3b7650;border-color:#3b7650}.dark-mode .ez-guide-panel{background:#18221b;border-color:#354238;box-shadow:0 25px 75px #0008}.dark-mode .ez-guide-header{background:#1f2a22;border-color:#354238}.dark-mode .guide-title strong{color:#e0eadf}.dark-mode .guide-title small,.dark-mode .guide-close,.dark-mode .ez-guide-notice{color:#a4b3a5}.dark-mode .ez-guide-notice{background:#1a251d}.dark-mode .guide-bubble{background:#202b23;border-color:#354238;color:#d0dcd0}.dark-mode .guide-message.user .guide-bubble{background:#294331;border-color:#3e5a43;color:#e4eee3}.dark-mode .guide-bubble a{color:#a9d6ab}.dark-mode .ez-guide-prompts,.dark-mode .ez-guide-form{background:#18221b}.dark-mode .guide-prompt{background:#202b23;border-color:#3b4b3d;color:#c1d6c0}.dark-mode .guide-prompt:hover{background:#2a3b2c}.dark-mode .ez-guide-form{border-color:#354238}.dark-mode .ez-guide-form input{background:#141b16;border-color:#3b4b3d;color:#e3ebe3}.dark-mode .ez-guide-form button{background:#3b7650}
+@media(max-width:700px){.ez-guide{right:14px;bottom:14px}.ez-guide-toggle{padding:11px 14px}.ez-guide-panel{bottom:57px;width:min(370px,calc(100vw - 28px));height:min(540px,calc(100dvh - 96px));border-radius:15px}.guide-bubble{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.ez-guide-panel{animation:none}.ez-guide-toggle{transition:none}}
