@@ -28,3 +28,7 @@ body.is-landing{overflow-x:hidden}body.is-landing .side,body.is-landing main>hea
 .legal-landing-links a:hover{color:var(--fg)}
 .legal-auth-note{margin:16px 0 0;color:var(--muted);font-size:12px;line-height:1.6}
 .legal-auth-note a{color:var(--fg)}
+.mission-source-badge{display:inline-block;margin-top:12px;padding:3px 6px;border:1px solid #39482f;color:#a5c96c;font:8px var(--mono);letter-spacing:.6px}
+.mission-source-badge+.mission-title{margin-top:8px}
+.mvp-notice{margin:0;color:var(--muted);font-size:11px;line-height:1.7}
+.mvp-empty{grid-column:1/-1;padding:20px;border:1px solid var(--line);border-radius:7px;color:var(--muted);background:var(--panel)}

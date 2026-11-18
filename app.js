@@ -1,58 +1,641 @@
-const SUPABASE_URL="https://pxettzglcudocjzyzvzd.supabase.co";
-const SUPABASE_ANON_KEY="sb_publishable_zYMmahOa_OmlYcanFyaBTQ_WRqZeVJs";
-const ENABLE_GOOGLE=true;
-const sb=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
-if(!sb)console.error("Supabase client unavailable; continuing in guest mode");
-const missions=[
-{id:"orbit",company:"Orbit Notes",sector:"Productivity · Early access",title:"Find your focus flow",description:"Can a calmer notes app make daily planning feel effortless?",type:"Mobile app",duration:"12 min",reward:10,logo:"O",tone:"",spots:8,brief:"Explore Orbit Notes on a short planning task. Capture an idea, organize it, and find it again. Tell the team what feels natural and where you had to stop and think.",goal:"Complete a 3-step planning flow",platform:"iOS · TestFlight"},
-{id:"luma",company:"Luma Goods",sector:"Commerce · Concept test",title:"A smoother way to shop",description:"Help shape a more thoughtful checkout for everyday essentials.",type:"Website",duration:"8 min",reward:10,logo:"L",tone:"violet",spots:12,brief:"Browse a small collection, add an item to your bag, and move through checkout. Is it easy to find essentials and are the final steps clear?",goal:"Browse and try a sample checkout",platform:"Web · Desktop or mobile"},
-{id:"pulse",company:"Pulse Budget",sector:"Personal finance · Beta",title:"Make money feel simple",description:"A fresh approach to everyday budgeting.",type:"Prototype",duration:"15 min",reward:10,logo:"P",tone:"blue",spots:5,brief:"Use a clickable prototype to set a monthly goal and review a spending snapshot. Share what you expected and anything that felt unclear.",goal:"Set a goal in the prototype",platform:"Web · Clickable prototype"},
-{id:"frame",company:"Frameflow",sector:"Creative tools · Usability",title:"Your canvas, in motion",description:"Try a new way to collect references and build a moodboard.",type:"Website",duration:"10 min",reward:10,logo:"F",tone:"orange",spots:9,brief:"Start a moodboard from sample images. Add, move, and group things on the canvas. The team wants to know where you get stuck.",goal:"Create a small moodboard",platform:"Web · Desktop"},
-{id:"atlas",company:"Atlas Weekends",sector:"Travel · Discovery test",title:"Plan a local escape",description:"Turn a free Saturday into a small adventure.",type:"Mobile app",duration:"9 min",reward:10,logo:"A",tone:"pink",spots:6,brief:"Explore nearby day trips and save one. Is it easy to find a plan that fits your time and interests?",goal:"Find and save a weekend plan",platform:"iOS · Prototype"},
-{id:"moss",company:"Moss & Main",sector:"Wellness · First impressions",title:"A gentler start to the day",description:"Refine a new morning routine app for a small wellness studio.",type:"Prototype",duration:"7 min",reward:10,logo:"M",tone:"teal",spots:14,brief:"Take a first look at a guided morning routine. Try the opening screen and one short breathing exercise, then share your first impressions.",goal:"Try the intro and one exercise",platform:"Web · Mobile prototype"}];
-let credits=50,filter="All",sortMode="newest";const done=new Set(),labels={landing:"OVERVIEW",dashboard:"MISSION CONTROL",missions:"MISSION BOARD",create:"CREATE MISSION"};
-try{const saved=localStorage.getItem("ez-progress");if(saved){const progress=JSON.parse(saved);if(typeof progress.credits==="number"&&Number.isFinite(progress.credits)&&Array.isArray(progress.done)){credits=progress.credits;progress.done.forEach(id=>done.add(id))}else console.error("Could not load saved progress: invalid format")}}catch(error){console.error("Could not load saved progress",error)}
-const userMissionsKey="ez-user-missions";
-function loadUserMissions(){try{const saved=localStorage.getItem(userMissionsKey);if(!saved)return[];const parsed=JSON.parse(saved);if(!Array.isArray(parsed))throw new Error("Stored missions must be an array");return parsed.filter(m=>m&&typeof m==="object"&&["company","sector","title","description","type","duration","logo","tone","brief","goal","platform","id"].every(k=>typeof m[k]==="string")&&["Website","Mobile app","Prototype"].includes(m.type)&&Number.isFinite(m.reward)&&Number.isFinite(m.spots)).map(m=>{if(m.link!==undefined&&(typeof m.link!=="string"||!m.link.startsWith("https://")))delete m.link;if(m.formUrl!==undefined&&(typeof m.formUrl!=="string"||!m.formUrl.startsWith("https://")))delete m.formUrl;return m})}catch(error){console.error("Could not load saved missions",error);return[]}}
-const userMissions=loadUserMissions();missions.unshift(...userMissions);
-function escapeHtml(value){return String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
-function card(m){let ended=done.has(m.id);return '<article class="mission-card"><div class="mission-top"><div class="mbrand"><i class="logo '+escapeHtml(m.tone)+'">'+escapeHtml(m.logo)+'</i><span><b class="company">'+escapeHtml(m.company)+'</b><small class="sector">'+escapeHtml(m.sector)+'</small></span></div><b class="reward">✳ '+m.reward+' CR</b></div><h3 class="mission-title">'+escapeHtml(m.title)+'</h3><p class="mission-desc">'+escapeHtml(m.description)+'</p><div class="mission-meta"><small class="tag">'+escapeHtml(m.type)+'</small><span class="duration">◷ &nbsp;'+escapeHtml(m.duration)+'</span></div><div class="mission-bottom"><span class="spots"><i class="dot"></i>'+(ended?"Completed":m.spots+" spots open")+'</span>'+(m.id.startsWith("user-")?'<button class="mission-delete" data-delete="'+escapeHtml(m.id)+'">DELETE</button>':"")+'<button class="mission-action" data-open="'+escapeHtml(m.id)+'" '+(ended?"disabled":"")+'>'+(ended?"COMPLETE ✓":"VIEW MISSION ↗")+'</button></div></article>'}
-function render(){document.getElementById("featured").innerHTML=missions.filter(m=>!m.id.startsWith("user-")).slice(0,2).map(card).join("");const board=filter==="All"?missions:missions.filter(m=>m.type===filter);document.getElementById("all").innerHTML=(sortMode==="newest"?board:board.slice().sort((a,b)=>b.reward-a.reward)).map(card).join("");document.getElementById("sort-label").textContent=sortMode==="newest"?"NEWEST MISSIONS":"HIGHEST REWARD";const count=String(missions.length).padStart(2,"0");document.getElementById("nav-count").textContent=count;document.getElementById("open-count").textContent=count;document.getElementById("filter-count").textContent=count;document.getElementById("total-count").textContent=count;document.getElementById("balance").textContent=credits.toLocaleString();document.getElementById("wallet").innerHTML=credits.toLocaleString()+' <i>CR</i>';document.getElementById("today").textContent=new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date()).toUpperCase()}
-function navigate(name){const wasLanding=document.body.classList.contains("is-landing");document.querySelectorAll(".view").forEach(v=>v.classList.toggle("show",v.dataset.page===name));document.querySelectorAll(".nav").forEach(v=>v.classList.toggle("active",v.dataset.viewLink===name));document.body.classList.toggle("is-landing",name==="landing");document.getElementById("crumb").textContent=labels[name];document.getElementById("side").classList.remove("open");if(wasLanding||name==="landing")window.scrollTo(0,0);else scrollTo({top:0,behavior:"smooth"})}
-function toast(text){let el=document.getElementById("toast");el.textContent=text;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2600)}
-function openMission(id){let m=missions.find(x=>x.id===id),d=document.getElementById("dialog");document.getElementById("detail").innerHTML='<div class="dialog-kicker">MISSION BRIEF / '+escapeHtml(id.toUpperCase())+'</div><h2 class="dialog-title">'+escapeHtml(m.title)+'</h2><div class="dialog-company">'+escapeHtml(m.company)+' · '+escapeHtml(m.sector)+'</div><p class="dialog-desc">'+escapeHtml(m.brief)+'</p><div class="dialog-details"><div class="dialog-detail"><small>OBJECTIVE</small><strong>'+escapeHtml(m.goal)+'</strong></div><div class="dialog-detail"><small>PLATFORM</small><strong>'+escapeHtml(m.platform)+'</strong></div><div class="dialog-detail"><small>TIME NEEDED</small><strong>'+escapeHtml(m.duration)+'</strong></div><div class="dialog-detail"><small>REWARD</small><strong>'+m.reward+' credits</strong></div></div><div class="dialog-actions"><b class="reward">\u2733 '+m.reward+' CR</b>'+(m.link&&m.formUrl?'<a class="mission-link" href="'+escapeHtml(m.link)+'" target="_blank" rel="noopener noreferrer">Open product \u2197</a><a class="mission-link" href="'+escapeHtml(m.formUrl)+'" target="_blank" rel="noopener noreferrer">Give feedback \u2197</a>':'<button id="finish" class="primary">Complete demo mission \u2192</button>')+'</div>'+(m.link&&m.formUrl?'<p class="mission-note">Credits are added after the founder reviews your feedback.</p>':"");d.showModal();const finish=document.getElementById("finish");if(finish)finish.onclick=()=>{done.add(id);credits+=m.reward;try{localStorage.setItem("ez-progress",JSON.stringify({credits,done:[...done]}))}catch(error){console.error("Could not save progress",error)}document.getElementById("balance").textContent=credits.toLocaleString();document.getElementById("wallet").innerHTML=credits.toLocaleString()+' <i>CR</i>';render();d.close();toast("Mission complete — "+m.reward+" credits added")}}
-document.addEventListener("click",e=>{let del=e.target.closest("[data-delete]");if(del){const id=del.dataset.delete;if(!confirm("Delete this mission?"))return;for(let i=missions.length-1;i>=0;i--)if(missions[i].id===id)missions.splice(i,1);for(let i=userMissions.length-1;i>=0;i--)if(userMissions[i].id===id)userMissions.splice(i,1);try{localStorage.setItem(userMissionsKey,JSON.stringify(userMissions))}catch(error){console.error("Could not save deleted missions",error)}if(done.delete(id)){try{localStorage.setItem("ez-progress",JSON.stringify({credits,done:[...done]}))}catch(error){console.error("Could not save progress",error)}}render();toast("Mission deleted");return}let sort=e.target.closest("#sort");if(sort){sortMode=sortMode==="newest"?"reward":"newest";render();return}let a=e.target.closest("[data-view-link]");if(a){e.preventDefault();navigate(a.dataset.viewLink);return}let m=e.target.closest("[data-open]");if(m&&!m.disabled){openMission(m.dataset.open);return}let f=e.target.closest("[data-filter]");if(f){filter=f.dataset.filter;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("selected",x===f));render()}});
-document.getElementById("close").onclick=()=>document.getElementById("dialog").close();document.getElementById("dialog").onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.close()};document.getElementById("menu").onclick=()=>document.getElementById("side").classList.toggle("open");
-document.getElementById("create-form").addEventListener("submit",e=>{e.preventDefault();const form=e.currentTarget;form.querySelectorAll("input:not([type=number]),textarea").forEach(field=>field.setCustomValidity(field.value.trim()?"":"Please fill out this field."));const rewardValue=form.elements.reward.value,spotsValue=form.elements.spots.value;if(!Number.isInteger(Number(rewardValue))||Number(rewardValue)<1||!Number.isInteger(Number(spotsValue))||Number(spotsValue)<1){toast("Reward and spots must be whole numbers, 1 or more");return}if(!form.reportValidity())return;if(credits<30){toast("You need 30 credits to create a mission");return}const values=Object.fromEntries(new FormData(form));if(!values.link.trim().startsWith("https://")||!values.formUrl.trim().startsWith("https://")){toast("Links must start with https://");return}const tones=["","violet","blue","orange","pink","teal"];const mission={id:"user-"+Date.now()+"-"+(userMissions.length+1),company:values.company.trim(),sector:"Community · User-created",title:values.title.trim(),description:values.description.trim(),type:values.type,duration:values.duration.trim(),reward:Number(values.reward),logo:values.company.trim().charAt(0).toUpperCase(),tone:tones[userMissions.length%tones.length],spots:Number(values.spots),brief:values.brief.trim(),goal:values.goal.trim(),platform:values.platform.trim(),link:values.link.trim(),formUrl:values.formUrl.trim()};const updated=[mission,...userMissions];try{localStorage.setItem(userMissionsKey,JSON.stringify(updated))}catch(error){console.error("Could not save mission",error);toast("Could not save mission");return}userMissions.unshift(mission);missions.unshift(mission);credits-=30;try{localStorage.setItem("ez-progress",JSON.stringify({credits,done:[...done]}))}catch(error){console.error("Could not save progress",error)}form.reset();form.elements.reward.value=10;render();toast("Mission created");navigate("missions")});
+const SUPABASE_URL = "https://pxettzglcudocjzyzvzd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_zYMmahOa_OmlYcanFyaBTQ_WRqZeVJs";
+const ENABLE_GOOGLE = true;
+const supabaseClient = window.supabase && window.supabase.createClient
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+const pageLabels = {
+  landing: "OVERVIEW",
+  dashboard: "MISSION CONTROL",
+  missions: "MISSION BOARD",
+  create: "CREATE MISSION"
+};
+const sampleMissions = [
+  {
+    id: "orbit",
+    kind: "sample",
+    company: "Orbit Notes",
+    sector: "Productivity · Example",
+    title: "Find your focus flow",
+    description: "Can a calmer notes app make daily planning feel effortless?",
+    type: "Mobile app",
+    duration: "12 min",
+    reward: 10,
+    logo: "O",
+    tone: "",
+    spots: 8,
+    audience: "People who plan their work with notes",
+    brief: "Explore Orbit Notes on a short planning task. Capture an idea, organize it, and find it again. Tell the team what feels natural and where you had to stop and think.",
+    goal: "Complete a 3-step planning flow",
+    feedback: "What felt clear, and where did you get stuck?",
+    platform: "iOS · TestFlight"
+  },
+  {
+    id: "luma",
+    kind: "sample",
+    company: "Luma Goods",
+    sector: "Commerce · Example",
+    title: "A smoother way to shop",
+    description: "Help shape a more thoughtful checkout for everyday essentials.",
+    type: "Website",
+    duration: "8 min",
+    reward: 10,
+    logo: "L",
+    tone: "violet",
+    spots: 12,
+    audience: "People shopping for everyday essentials",
+    brief: "Browse a small collection, add an item to your bag, and move through checkout. Is it easy to find essentials and are the final steps clear?",
+    goal: "Browse and try a sample checkout",
+    feedback: "Was the checkout understandable and easy to complete?",
+    platform: "Web · Desktop or mobile"
+  },
+  {
+    id: "pulse",
+    kind: "sample",
+    company: "Pulse Budget",
+    sector: "Personal finance · Example",
+    title: "Make money feel simple",
+    description: "A fresh approach to everyday budgeting.",
+    type: "Prototype",
+    duration: "15 min",
+    reward: 10,
+    logo: "P",
+    tone: "blue",
+    spots: 5,
+    audience: "People who want a clearer monthly budget",
+    brief: "Use a clickable prototype to set a monthly goal and review a spending snapshot. Share what you expected and anything that felt unclear.",
+    goal: "Set a goal in the prototype",
+    feedback: "What did you expect the budget summary to show?",
+    platform: "Web · Clickable prototype"
+  },
+  {
+    id: "frame",
+    kind: "sample",
+    company: "Frameflow",
+    sector: "Creative tools · Example",
+    title: "Your canvas, in motion",
+    description: "Try a new way to collect references and build a moodboard.",
+    type: "Website",
+    duration: "10 min",
+    reward: 10,
+    logo: "F",
+    tone: "orange",
+    spots: 9,
+    audience: "Designers collecting visual references",
+    brief: "Start a moodboard from sample images. Add, move, and group things on the canvas. The team wants to know where you get stuck.",
+    goal: "Create a small moodboard",
+    feedback: "Which canvas actions were difficult to discover?",
+    platform: "Web · Desktop"
+  },
+  {
+    id: "atlas",
+    kind: "sample",
+    company: "Atlas Weekends",
+    sector: "Travel · Example",
+    title: "Plan a local escape",
+    description: "Turn a free Saturday into a small adventure.",
+    type: "Mobile app",
+    duration: "9 min",
+    reward: 10,
+    logo: "A",
+    tone: "pink",
+    spots: 6,
+    audience: "People looking for nearby weekend activities",
+    brief: "Explore nearby day trips and save one. Is it easy to find a plan that fits your time and interests?",
+    goal: "Find and save a weekend plan",
+    feedback: "Did the plan match the time and interests you selected?",
+    platform: "iOS · Prototype"
+  },
+  {
+    id: "moss",
+    kind: "sample",
+    company: "Moss & Main",
+    sector: "Wellness · Example",
+    title: "A gentler start to the day",
+    description: "Refine a new morning routine app for a small wellness studio.",
+    type: "Prototype",
+    duration: "7 min",
+    reward: 10,
+    logo: "M",
+    tone: "teal",
+    spots: 14,
+    audience: "People exploring short morning routines",
+    brief: "Take a first look at a guided morning routine. Try the opening screen and one short breathing exercise, then share your first impressions.",
+    goal: "Try the intro and one exercise",
+    feedback: "How did the opening instructions feel?",
+    platform: "Web · Mobile prototype"
+  }
+];
+
+let userMissions = [];
+let currentUser = null;
+let activeFilter = "All";
+let sortMode = "newest";
+let toastTimeout;
+
+const authScreen = document.getElementById("auth-screen");
+const authError = document.getElementById("auth-error");
+const loginGithub = document.getElementById("login-github");
+const loginGoogle = document.getElementById("login-google");
+const guestButton = document.getElementById("guest");
+const userBox = document.querySelector(".sidefoot .profile");
+const dialog = document.getElementById("dialog");
+const createForm = document.getElementById("create-form");
+
+function clearLegacyBrowserData() {
+  try {
+    localStorage.removeItem("ez-progress");
+    localStorage.removeItem("ez-user-missions");
+  } catch (error) {
+    console.warn("Could not clear previous demo data", error);
+  }
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
+}
+
+function getVisibleMissions() {
+  const ownedPreviews = currentUser
+    ? userMissions.filter(mission => mission.ownerId === currentUser.id)
+    : [];
+  return [...sampleMissions, ...ownedPreviews];
+}
+
+function missionCard(mission) {
+  const isPreview = mission.kind === "preview";
+  const canDelete = isPreview && currentUser && mission.ownerId === currentUser.id;
+  const spotLabel = mission.spots > 0
+    ? `${mission.spots} spots listed`
+    : "No spots available";
+  const sourceLabel = isPreview ? "PREVIEW ONLY" : "SAMPLE ONLY";
+  const actionLabel = mission.spots > 0
+    ? (isPreview ? "OPEN PREVIEW ↗" : "VIEW SAMPLE ↗")
+    : "NO SPOTS AVAILABLE";
+
+  return `<article class="mission-card">
+    <div class="mission-top">
+      <div class="mbrand">
+        <i class="logo ${escapeHtml(mission.tone)}">${escapeHtml(mission.logo)}</i>
+        <span><b class="company">${escapeHtml(mission.company)}</b><small class="sector">${escapeHtml(mission.sector)}</small></span>
+      </div>
+      <b class="reward">✳ ${escapeHtml(mission.reward)} DEMO CR</b>
+    </div>
+    <div class="mission-source-badge">${sourceLabel}</div>
+    <h3 class="mission-title">${escapeHtml(mission.title)}</h3>
+    <p class="mission-desc">${escapeHtml(mission.description)}</p>
+    <div class="mission-meta">
+      <small class="tag">${escapeHtml(mission.type)}</small>
+      <span class="duration">◷ &nbsp;${escapeHtml(mission.duration)}</span>
+    </div>
+    <div class="mission-bottom">
+      <span class="spots">${escapeHtml(spotLabel)}</span>
+      ${canDelete ? `<button class="mission-delete" data-delete="${escapeHtml(mission.id)}">DELETE PREVIEW</button>` : ""}
+      <button class="mission-action" data-open="${escapeHtml(mission.id)}" ${mission.spots <= 0 ? "disabled" : ""}>${actionLabel}</button>
+    </div>
+  </article>`;
+}
+
+function renderCreditStatus() {
+  document.getElementById("balance").textContent = "—";
+  document.getElementById("wallet").textContent = "Demo only";
+}
+
+function render() {
+  const missions = getVisibleMissions();
+  const featured = missions.slice(0, 2);
+  const filtered = activeFilter === "All"
+    ? missions
+    : missions.filter(mission => mission.type === activeFilter);
+  const sorted = sortMode === "newest"
+    ? filtered
+    : filtered.slice().sort((first, second) => second.reward - first.reward);
+
+  document.getElementById("featured").innerHTML = featured.map(missionCard).join("");
+  document.getElementById("all").innerHTML = sorted.length
+    ? sorted.map(missionCard).join("")
+    : '<p class="mvp-empty">No mission previews in this category.</p>';
+  document.getElementById("sort-label").textContent = sortMode === "newest"
+    ? "NEWEST PREVIEWS"
+    : "HIGHEST SAMPLE REWARD";
+
+  const count = String(missions.length).padStart(2, "0");
+  document.getElementById("nav-count").textContent = count;
+  document.getElementById("open-count").textContent = count;
+  document.getElementById("filter-count").textContent = count;
+  document.getElementById("total-count").textContent = count;
+  renderCreditStatus();
+}
+
+function navigate(pageName) {
+  if (pageName === "create" && !currentUser) {
+    requireSignedInToCreate();
+    return;
+  }
+
+  const wasLanding = document.body.classList.contains("is-landing");
+  document.querySelectorAll(".view").forEach(view => {
+    view.classList.toggle("show", view.dataset.page === pageName);
+  });
+  document.querySelectorAll(".nav[data-view-link]").forEach(link => {
+    link.classList.toggle("active", link.dataset.viewLink === pageName);
+  });
+  document.body.classList.toggle("is-landing", pageName === "landing");
+  document.getElementById("crumb").textContent = pageLabels[pageName];
+  document.getElementById("side").classList.remove("open");
+
+  if (wasLanding || pageName === "landing") {
+    window.scrollTo(0, 0);
+  } else {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
+function toast(message) {
+  const element = document.getElementById("toast");
+  element.textContent = message;
+  element.classList.add("show");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => element.classList.remove("show"), 2600);
+}
+
+function openMission(missionId) {
+  const mission = getVisibleMissions().find(item => item.id === missionId);
+  if (!mission) {
+    toast("This mission preview is no longer available.");
+    return;
+  }
+
+  const links = [];
+  if (mission.link) {
+    links.push(`<a class="mission-link" href="${escapeHtml(mission.link)}" target="_blank" rel="noopener noreferrer">Open product ↗</a>`);
+  }
+  if (mission.formUrl) {
+    links.push(`<a class="mission-link" href="${escapeHtml(mission.formUrl)}" target="_blank" rel="noopener noreferrer">Open feedback form ↗</a>`);
+  }
+
+  const prototypeNote = mission.kind === "sample"
+    ? "This is an example brief only. EZ has no live product, application, feedback submission or reward for it."
+    : "These links open outside EZ. This preview is not saved or published; EZ cannot record submissions, conduct reviews or award credits.";
+
+  document.getElementById("detail").innerHTML = `
+    <div class="dialog-kicker">${mission.kind === "sample" ? "SAMPLE BRIEF" : "MISSION PREVIEW"}</div>
+    <h2 class="dialog-title">${escapeHtml(mission.title)}</h2>
+    <div class="dialog-company">${escapeHtml(mission.company)} · ${escapeHtml(mission.sector)}</div>
+    <p class="dialog-desc">${escapeHtml(mission.brief)}</p>
+    <div class="dialog-details">
+      <div class="dialog-detail"><small>TARGET AUDIENCE</small><strong>${escapeHtml(mission.audience)}</strong></div>
+      <div class="dialog-detail"><small>TASK</small><strong>${escapeHtml(mission.goal)}</strong></div>
+      <div class="dialog-detail"><small>DESIRED FEEDBACK</small><strong>${escapeHtml(mission.feedback)}</strong></div>
+      <div class="dialog-detail"><small>TIME / PLATFORM</small><strong>${escapeHtml(mission.duration)} · ${escapeHtml(mission.platform)}</strong></div>
+      <div class="dialog-detail"><small>SPOTS LISTED</small><strong>${escapeHtml(mission.spots)}</strong></div>
+      <div class="dialog-detail"><small>ILLUSTRATIVE REWARD</small><strong>${escapeHtml(mission.reward)} demo credits; not redeemable</strong></div>
+    </div>
+    ${links.length ? `<div class="dialog-actions">${links.join("")}</div>` : ""}
+    <p class="mission-note">${escapeHtml(prototypeNote)}</p>`;
+  dialog.showModal();
+}
+
+function showAuthScreen(visible) {
+  authScreen.hidden = !visible;
+}
+
+function setAuthError(message) {
+  authError.textContent = message || "";
+}
+
+function requireSignedInToCreate() {
+  showAuthScreen(true);
+  setAuthError("Sign in to create a temporary mission preview.");
+}
+
+function getUserDisplayName(user) {
+  const metadata = user && user.user_metadata && typeof user.user_metadata === "object"
+    ? user.user_metadata
+    : {};
+  const candidates = [metadata.full_name, metadata.name, metadata.user_name, user && user.email];
+  const name = candidates.find(value => typeof value === "string" && value.trim());
+  return name ? name.trim() : "EZ tester";
+}
+
+function updateUserBox() {
+  const avatar = document.getElementById("user-avatar");
+  const name = document.getElementById("user-display-name");
+  const action = document.getElementById("user-auth-action");
+  const displayName = currentUser ? getUserDisplayName(currentUser) : "Guest";
+  const initials = displayName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(part => part.charAt(0))
+    .join("")
+    .toUpperCase() || "G";
+
+  name.textContent = displayName;
+  avatar.replaceChildren();
+  const metadata = currentUser && currentUser.user_metadata && typeof currentUser.user_metadata === "object"
+    ? currentUser.user_metadata
+    : {};
+
+  if (typeof metadata.avatar_url === "string" && metadata.avatar_url.startsWith("https://")) {
+    const image = document.createElement("img");
+    image.className = "auth-avatar-image";
+    image.src = metadata.avatar_url;
+    image.alt = "";
+    avatar.append(image);
+  } else {
+    avatar.textContent = initials;
+  }
+
+  action.textContent = currentUser ? "Log out" : "Sign in";
+  action.dataset.signedIn = currentUser ? "true" : "false";
+  document.getElementById("landing-guest-actions").hidden = !!currentUser;
+  document.getElementById("landing-user-actions").hidden = !currentUser;
+  if (currentUser) {
+    document.getElementById("landing-first-name").textContent = displayName.split(/[\s@]+/)[0];
+  }
+}
+
+function prepareAuthMarkup() {
+  userBox.classList.add("auth-user-box");
+  userBox.innerHTML = '<i id="user-avatar">G</i><span><b id="user-display-name">Guest</b><small>EZ tester</small></span><button type="button" class="auth-user-action" id="user-auth-action">Sign in</button>';
+}
+
+function setCurrentUser(user) {
+  const nextId = user && typeof user.id === "string" ? user.id : null;
+  const currentId = currentUser && currentUser.id ? currentUser.id : null;
+  if (nextId !== currentId) {
+    userMissions = [];
+  }
+
+  currentUser = user || null;
+  updateUserBox();
+  render();
+}
+
+function handleAuthSession(event, session) {
+  const previousUserId = currentUser && currentUser.id;
+  const nextUser = session && session.user ? session.user : null;
+  setCurrentUser(nextUser);
+  showAuthScreen(false);
+
+  if (nextUser && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+    navigate("dashboard");
+  } else if (!nextUser && (event === "SIGNED_OUT" || previousUserId)) {
+    navigate("landing");
+  }
+}
+
+async function login(provider) {
+  if (provider === "google" && !ENABLE_GOOGLE) {
+    return;
+  }
+  if (!supabaseClient) {
+    setAuthError("Sign-in is unavailable because Supabase is not configured in this page.");
+    return;
+  }
+
+  setAuthError("");
+  try {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}${window.location.pathname}`
+      }
+    });
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error(`Could not sign in with ${provider}`, error);
+    setAuthError(error && typeof error.message === "string"
+      ? error.message
+      : "Sign-in failed. Please try again.");
+  }
+}
+
+function validateHttpsUrl(input, label) {
+  input.setCustomValidity("");
+  let url;
+  try {
+    url = new URL(input.value.trim());
+  } catch {
+    input.setCustomValidity(`${label} must be a complete HTTPS URL.`);
+    return false;
+  }
+
+  if (url.protocol !== "https:" || !url.hostname || url.username || url.password) {
+    input.setCustomValidity(`${label} must be a valid HTTPS URL without embedded credentials.`);
+    return false;
+  }
+  return true;
+}
+
+function validateMissionForm(form) {
+  form.querySelectorAll("input, textarea").forEach(field => {
+    field.setCustomValidity(field.value.trim() ? "" : "Please fill out this field.");
+  });
+
+  const reward = Number(form.elements.reward.value);
+  const spots = Number(form.elements.spots.value);
+  if (!Number.isSafeInteger(reward) || reward < 1) {
+    form.elements.reward.setCustomValidity("Enter a whole number greater than zero.");
+  }
+  if (!Number.isSafeInteger(spots) || spots < 1) {
+    form.elements.spots.setCustomValidity("Enter a whole number greater than zero.");
+  }
+
+  const productUrlValid = validateHttpsUrl(form.elements.link, "Product link");
+  const feedbackUrlValid = validateHttpsUrl(form.elements.formUrl, "Feedback form link");
+  const formIsValid = form.reportValidity();
+  return productUrlValid && feedbackUrlValid && formIsValid;
+}
+
+function createMissionPreview(form) {
+  if (!currentUser) {
+    requireSignedInToCreate();
+    return;
+  }
+  if (!validateMissionForm(form)) {
+    return;
+  }
+
+  const values = Object.fromEntries(new FormData(form));
+  const company = values.company.trim();
+  const mission = {
+    id: `preview-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    kind: "preview",
+    ownerId: currentUser.id,
+    company,
+    sector: "Your preview · Not published",
+    title: values.title.trim(),
+    description: values.description.trim(),
+    type: values.type,
+    duration: values.duration.trim(),
+    reward: Number(values.reward),
+    logo: company.charAt(0).toUpperCase(),
+    tone: "",
+    spots: Number(values.spots),
+    audience: values.audience.trim(),
+    brief: values.brief.trim(),
+    goal: values.goal.trim(),
+    feedback: values.feedback.trim(),
+    platform: values.platform.trim(),
+    link: values.link.trim(),
+    formUrl: values.formUrl.trim()
+  };
+
+  userMissions.unshift(mission);
+  form.reset();
+  render();
+  toast("Temporary mission preview created. Nothing was published or saved.");
+  navigate("missions");
+}
+
+function deleteMissionPreview(missionId) {
+  const index = userMissions.findIndex(mission =>
+    mission.id === missionId && currentUser && mission.ownerId === currentUser.id
+  );
+  if (index < 0) {
+    toast("This mission preview could not be found.");
+    return;
+  }
+  if (!window.confirm("Remove this temporary mission preview?")) {
+    return;
+  }
+
+  userMissions.splice(index, 1);
+  render();
+  toast("Temporary mission preview removed.");
+}
+
+function handleDocumentClick(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target) {
+    return;
+  }
+
+  const deleteButton = target.closest("[data-delete]");
+  if (deleteButton) {
+    deleteMissionPreview(deleteButton.dataset.delete);
+    return;
+  }
+
+  if (target.closest("#sort")) {
+    sortMode = sortMode === "newest" ? "reward" : "newest";
+    render();
+    return;
+  }
+
+  const viewLink = target.closest("[data-view-link]");
+  if (viewLink) {
+    event.preventDefault();
+    navigate(viewLink.dataset.viewLink);
+    return;
+  }
+
+  const missionButton = target.closest("[data-open]");
+  if (missionButton && !missionButton.disabled) {
+    openMission(missionButton.dataset.open);
+    return;
+  }
+
+  const filterButton = target.closest("[data-filter]");
+  if (filterButton) {
+    activeFilter = filterButton.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(button => {
+      button.classList.toggle("selected", button === filterButton);
+    });
+    render();
+  }
+}
+
+clearLegacyBrowserData();
+prepareAuthMarkup();
+loginGoogle.hidden = !ENABLE_GOOGLE;
+updateUserBox();
 render();
 
-const authScreen=document.getElementById("auth-screen");
-const authError=document.getElementById("auth-error");
-const loginGithub=document.getElementById("login-github");
-const loginGoogle=document.getElementById("login-google");
-const guestButton=document.getElementById("guest");
-const userBox=document.querySelector(".sidefoot .profile");
-let currentUser=null;
-function readGuestChoice(){try{return sessionStorage.getItem("ez-guest")==="1"}catch(error){console.error("Could not read guest choice",error);return false}}
-function rememberGuestChoice(value){try{if(value)sessionStorage.setItem("ez-guest","1");else sessionStorage.removeItem("ez-guest")}catch(error){console.error("Could not save guest choice",error)}}
-let guestChoice=readGuestChoice();
-function setAuthScreen(visible){authScreen.hidden=!visible}
-function setAuthError(message){authError.textContent=message||""}
-function getUserDisplayName(user){const metadata=user&&user.user_metadata&&typeof user.user_metadata==="object"?user.user_metadata:{};for(const value of [metadata.full_name,metadata.user_name,user&&user.email])if(typeof value==="string"&&value.trim())return value.trim();return "EZ tester"}
-function updateUserBox(){const avatar=document.getElementById("user-avatar"),name=document.getElementById("user-display-name"),action=document.getElementById("user-auth-action");if(!avatar||!name||!action)return;const displayName=currentUser?getUserDisplayName(currentUser):"Guest";name.textContent=displayName;avatar.textContent=displayName.split(/\s+/).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase()||"G";if(currentUser){const metadata=currentUser.user_metadata&&typeof currentUser.user_metadata==="object"?currentUser.user_metadata:{};if(typeof metadata.avatar_url==="string"&&metadata.avatar_url.startsWith("https://")){const image=document.createElement("img");image.className="auth-avatar-image";image.src=metadata.avatar_url;image.alt="";avatar.textContent="";avatar.appendChild(image)}action.textContent="Log out"}else action.textContent="Sign in";action.dataset.signedIn=currentUser?"true":"false";const greeting=document.getElementById("user-name");if(greeting)greeting.textContent=currentUser?displayName.split(/[\s@]+/)[0]:"there";const landingFirstName=document.getElementById("landing-first-name");if(landingFirstName)landingFirstName.textContent=currentUser?displayName.split(/[\s@]+/)[0]:"";const landingGuestActions=document.getElementById("landing-guest-actions"),landingUserActions=document.getElementById("landing-user-actions");if(landingGuestActions)landingGuestActions.hidden=!!currentUser;if(landingUserActions)landingUserActions.hidden=!currentUser}
-function prepareAuthMarkup(){userBox.classList.add("auth-user-box");userBox.innerHTML='<i id="user-avatar">G</i><span><b id="user-display-name">Guest</b><small>EZ tester</small></span><button type="button" class="auth-user-action" id="user-auth-action">Sign in</button>';const greeting=document.querySelector('[data-page="dashboard"] .heading h1');if(greeting&&greeting.firstChild){greeting.firstChild.textContent="Good to have you back, ";const userName=document.createElement("span");userName.id="user-name";greeting.insertBefore(userName,greeting.lastElementChild)}}
-function requireSignedInToCreate(){toast("Sign in to create a mission");setAuthScreen(true)}
-async function login(provider){if(provider==="google"&&!ENABLE_GOOGLE)return;if(!sb){setAuthError("Sign-in is unavailable right now. Please try again later.");return}setAuthError("");try{const {error}=await sb.auth.signInWithOAuth({provider,options:{redirectTo:window.location.origin+window.location.pathname}});if(error)throw error}catch(error){console.error("Could not sign in with "+provider,error);setAuthError(error&&typeof error.message==="string"?error.message:"Sign-in failed. Please try again.")}}
-prepareAuthMarkup();
-loginGoogle.hidden=!ENABLE_GOOGLE;
-updateUserBox();
-loginGithub.addEventListener("click",()=>login("github"));
-loginGoogle.addEventListener("click",()=>login("google"));
-guestButton.addEventListener("click",()=>{guestChoice=true;rememberGuestChoice(true);setAuthError("");setAuthScreen(false);navigate("missions")});
-document.getElementById("landing-sign-in").addEventListener("click",()=>{setAuthError("");setAuthScreen(true);if(!sb)setAuthError("Sign-in is unavailable right now. Please try again later.")});
-document.getElementById("landing-create").addEventListener("click",()=>{if(currentUser)navigate("create");else{setAuthError("");setAuthScreen(true);if(!sb)setAuthError("Sign-in is unavailable right now. Please try again later.")}});
-document.getElementById("user-auth-action").addEventListener("click",async event=>{if(event.currentTarget.dataset.signedIn!=="true"){setAuthError("");setAuthScreen(true);if(!sb)setAuthError("Sign-in is unavailable right now. Please try again later.");return}guestChoice=false;rememberGuestChoice(false);setAuthError("");setAuthScreen(false);try{const {error}=await sb.auth.signOut();if(error)throw error;currentUser=null;updateUserBox();navigate("landing")}catch(error){console.error("Could not sign out",error);toast(error&&typeof error.message==="string"?error.message:"Sign out failed. Please try again.")}});
-const originalNavigate=navigate;
-navigate=function(name){if(name==="create"&&!currentUser){requireSignedInToCreate();return}originalNavigate(name)};
-document.getElementById("create-form").addEventListener("submit",event=>{if(!currentUser){event.preventDefault();event.stopImmediatePropagation();requireSignedInToCreate()}},true);
-if(sb){setAuthScreen(false);sb.auth.onAuthStateChange((event,session)=>{currentUser=session&&session.user?session.user:null;if(currentUser){guestChoice=false;rememberGuestChoice(false);setAuthScreen(false);updateUserBox();navigate("dashboard")}else if(event==="SIGNED_OUT"){guestChoice=false;rememberGuestChoice(false);setAuthScreen(false);updateUserBox();navigate("landing")}else{updateUserBox();setAuthScreen(false)}});sb.auth.getSession().then(({data,error})=>{if(error)throw error;currentUser=data&&data.session&&data.session.user?data.session.user:null;if(currentUser){guestChoice=false;rememberGuestChoice(false);updateUserBox();setAuthScreen(false);navigate("dashboard")}else{updateUserBox();setAuthScreen(false)}}).catch(error=>{console.error("Could not get Supabase session",error);currentUser=null;updateUserBox();setAuthScreen(false)})}else{guestChoice=true;updateUserBox();setAuthScreen(false)}
+document.addEventListener("click", handleDocumentClick);
+document.getElementById("close").addEventListener("click", () => dialog.close());
+dialog.addEventListener("click", event => {
+  if (event.target === dialog) {
+    dialog.close();
+  }
+});
+document.getElementById("menu").addEventListener("click", () => {
+  document.getElementById("side").classList.toggle("open");
+});
+createForm.addEventListener("submit", event => {
+  event.preventDefault();
+  createMissionPreview(createForm);
+}, true);
+loginGithub.addEventListener("click", () => login("github"));
+loginGoogle.addEventListener("click", () => login("google"));
+guestButton.addEventListener("click", () => {
+  setAuthError("");
+  showAuthScreen(false);
+  navigate("missions");
+});
+document.getElementById("landing-sign-in").addEventListener("click", () => {
+  setAuthError("");
+  showAuthScreen(true);
+});
+document.getElementById("landing-create").addEventListener("click", () => navigate("create"));
+document.getElementById("user-auth-action").addEventListener("click", async event => {
+  if (event.currentTarget.dataset.signedIn !== "true") {
+    setAuthError("");
+    showAuthScreen(true);
+    return;
+  }
+  if (!supabaseClient) {
+    setAuthError("Sign-out is unavailable because Supabase is not configured in this page.");
+    showAuthScreen(true);
+    return;
+  }
+
+  setAuthError("");
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+      throw error;
+    }
+  } catch (error) {
+    console.error("Could not sign out", error);
+    toast(error && typeof error.message === "string"
+      ? error.message
+      : "Sign-out failed. Please try again.");
+  }
+});
+
+if (supabaseClient) {
+  let authEventReceived = false;
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    authEventReceived = true;
+    handleAuthSession(event, session);
+  });
+  supabaseClient.auth.getSession()
+    .then(({ data, error }) => {
+      if (error) {
+        throw error;
+      }
+      if (!authEventReceived) {
+        handleAuthSession("INITIAL_SESSION", data && data.session);
+      }
+    })
+    .catch(error => {
+      console.error("Could not get Supabase session", error);
+      if (!authEventReceived) {
+        setCurrentUser(null);
+        showAuthScreen(false);
+      }
+    });
+} else {
+  showAuthScreen(false);
+}
