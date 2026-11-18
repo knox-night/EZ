@@ -1,6 +1,6 @@
 const SUPABASE_URL="https://pxettzglcudocjzyzvzd.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_zYMmahOa_OmlYcanFyaBTQ_WRqZeVJs";
-const ENABLE_GOOGLE=false;
+const ENABLE_GOOGLE=true;
 const sb=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
 if(!sb)console.error("Supabase client unavailable; continuing in guest mode");
 const missions=[
