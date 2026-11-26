@@ -1,9 +1,265 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080b0c"><title>EZ — Product testing, in motion</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script></head><body class="is-landing">
-<section id="auth-screen" class="auth-screen" aria-labelledby="auth-title" hidden><div class="auth-card"><div class="auth-brand"><b>e<span>.</span></b><span>ez<small>PLAYTEST NETWORK</small></span></div><h1 id="auth-title">Sign in to EZ</h1><p>Sign in to preview the mission workflow. Live testing, feedback review and credits are not connected yet.</p><div class="auth-actions"><button type="button" class="auth-provider" id="login-github">Continue with GitHub</button><button type="button" class="auth-provider" id="login-google" hidden>Continue with Google</button></div><div id="auth-error" class="auth-error" role="alert" aria-live="polite"></div><button type="button" id="guest" class="auth-guest">Explore sample missions</button><p class="legal-auth-note">By continuing you agree to the <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms of use</a> and <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy policy</a>.</p></div></section>
-<aside class="side" id="side"><a class="brand" href="#" data-view-link="landing"><b>e<span>.</span></b><span>ez<small>PLAYTEST NETWORK</small></span></a><small class="label">WORKSPACE</small><nav><button class="nav" data-view-link="landing">⌂ &nbsp; Overview</button><button class="nav active" data-view-link="dashboard">◈ &nbsp; Mission control <i></i></button><button class="nav" data-view-link="missions">◎ &nbsp; Mission board <small id="nav-count">06</small></button><button class="nav" data-view-link="create">+ Create mission</button></nav><div class="sidefoot"><div class="online"><i class="dot"></i><span><b>Preview mode</b><small>Sample data only</small></span></div><div class="profile"><i>G</i><span><b>Guest</b><small>EZ tester</small></span></div><nav class="legal-side-links" aria-label="Legal"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></aside>
-<main><header><button id="menu" class="menu">☰</button><div class="crumb">EZ NETWORK <i>/</i> <b id="crumb">MISSION CONTROL</b></div><div class="top"><small class="live">MVP PREVIEW</small><div class="credits"><span>✳</span><small>DEMO CREDITS<b id="balance">N/A</b></small></div></div></header><div class="wrap">
-<section class="view show lp-page" data-page="landing"><nav class="lp-topbar" aria-label="Landing page"><a class="lp-brand" href="#" data-view-link="landing">EZ</a><div class="lp-top-guest" id="landing-guest-actions"><a class="lp-link" href="#" data-view-link="missions">Browse missions</a><button type="button" class="lp-secondary" id="landing-sign-in">Sign in</button></div><div class="lp-top-user" id="landing-user-actions" hidden><span id="landing-first-name"></span><button type="button" class="lp-secondary" data-view-link="dashboard">Open mission control</button></div></nav><div class="lp-content"><section class="lp-hero"><div class="lp-hero-copy"><h1>Real people try your product. You see where they get stuck.</h1><p>EZ is an early-access prototype for indie founders and testers. Explore sample briefs or preview a mission you would like to run.</p><div class="lp-hero-actions"><button type="button" class="lp-primary" id="landing-create">Create a mission preview</button><a class="lp-link" href="#" data-view-link="missions">Explore sample missions</a></div></div><article class="lp-report"><div class="lp-report-bar"></div><p class="lp-report-label">Example report</p><dl class="lp-report-rows"><div class="lp-report-row"><dt>What they thought it was</dt><dd>A tool that summarises my GitHub week.</dd></div><div class="lp-report-row"><dt>Where they got stuck</dt><dd>Couldn't find where to connect GitHub. 3 of 5 testers.</dd></div><div class="lp-report-row"><dt>Would they use it</dt><dd>2 of 5 said yes.</dd></div><div class="lp-report-row"><dt>What they'd change</dt><dd>Show a sample digest before asking for sign-in.</dd></div></dl></article></section><section class="lp-section lp-how"><h2>Planned workflow</h2><ol class="lp-steps"><li><span class="lp-number">1</span><div><h3>Create a mission preview.</h3><p>Describe the product, audience, task and desired feedback.</p></div></li><li><span class="lp-number">2</span><div><h3>Recruit testers.</h3><p>Matching and active tester recruitment are not connected yet.</p></div></li><li><span class="lp-number">3</span><div><h3>Review feedback.</h3><p>Feedback review and reports are not connected in this preview.</p></div></li></ol></section><section class="lp-section lp-try"><h2>Want to test instead?</h2><p>Browse sample mission briefs. Testing submissions, matching, founder review and rewards are not available yet.</p><button type="button" class="lp-secondary" data-view-link="missions">Browse missions</button></section><footer class="lp-footer">EZ is an early-access prototype. Sample credits have no cash value and cannot be earned, spent or redeemed.<nav class="legal-landing-links" aria-label="Legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a><a href="mailto:sigmaboy789265@gmail.com">Contact</a></nav></footer></div></section>
-<section class="view" data-page="dashboard"><div class="heading"><div><div class="eyebrow"><i></i> <span id="today"></span></div><h1>Mission control<span>.</span></h1><p>Activity and tester matching are not connected yet.</p></div><button class="outline" data-view-link="missions">Browse all missions →</button></div><div class="dashboard"><div><div class="sect"><b><i>01 /</i> Sample missions</b><button data-view-link="missions">VIEW MISSION BOARD ↗</button></div><div class="cards" id="featured"></div><div class="sect howtitle"><b><i>02 /</i> MVP status</b><small>YOUR WAY IN</small></div><div class="how"><span><i>01</i><b>Mission previews</b><small>Temporary drafts in this browser.</small></span><em>→</em><span><i>02</i><b>Tester matching</b><small>Not connected yet.</small></span><em>→</em><span><i>03</i><b>Feedback review</b><small>Not connected yet.</small></span></div></div><aside class="right"><div class="wallet"><small>DEMO CREDIT STATUS</small><strong id="wallet">Demo only</strong><p>Not spendable or redeemable. No server-side credit ledger is connected.</p></div><div class="activity"><small>LIVE ACTIVITY <span>NOT CONNECTED</span></small><p>Mission applications, submissions and founder reviews are not connected yet.</p></div><div class="quote"><b>Preview mode</b><small>Sample missions only. No live marketplace.</small></div></aside></div><footer class="foot">EZ / PRODUCT TESTING NETWORK <span>MADE FOR BETTER ✳</span></footer></section>
-<section class="view" data-page="missions"><div class="heading"><div><div class="eyebrow"><i></i> PREVIEW MISSIONS / <span id="open-count">06</span> PREVIEWS</div><h1>Mission board<span>.</span></h1><p>Sample mission briefs. Live testing, submissions and rewards are not available.</p></div><div class="total"><small>PREVIEW ENTRIES</small><b><span id="total-count">06</span> <i>MISSIONS</i></b></div></div><div class="toolbar"><div class="filters"><button class="filter selected" data-filter="All">All missions <i><span id="filter-count">06</span></i></button><button class="filter" data-filter="Website">Websites</button><button class="filter" data-filter="Mobile app">Mobile apps</button><button class="filter" data-filter="Prototype">Prototypes</button></div><button type="button" class="sort" id="sort"><i class="dot"></i> <span id="sort-label">NEWEST MISSIONS</span> ⌄</button></div><div class="cards board" id="all"></div><footer class="foot">EZ / PRODUCT TESTING NETWORK <span>MADE FOR BETTER ✳</span></footer></section>
-<section class="view" data-page="create"><div class="heading"><div><div class="eyebrow"><i></i> NEW OPPORTUNITY</div><h1>Create a mission<span>.</span></h1><p>This preview stays in this tab only. It will not be published or saved.</p></div></div><form id="create-form" class="create-form" novalidate><label>Company name<input name="company" required></label><label>Mission title<input name="title" required></label><label class="wide">Short description<textarea name="description" rows="2" required></textarea></label><label class="wide">Target audience<input name="audience" required></label><label>Type<select name="type" required><option value="" selected disabled>Choose a type</option><option>Website</option><option>Mobile app</option><option>Prototype</option></select></label><label>Duration<input name="duration" placeholder="10 min" required></label><label>Illustrative demo reward (not redeemable)<input name="reward" type="number" min="1" step="1" value="10" required></label><label>Spots<input name="spots" type="number" min="1" step="1" required></label><label class="wide">Testing task<textarea name="brief" rows="4" required></textarea></label><label class="wide">Desired feedback<textarea name="feedback" rows="3" required></textarea></label><label>Task objective<input name="goal" required></label><label>Platform<input name="platform" required></label><label>Product link<input name="link" type="url" required placeholder="https://yourproduct.com"></label><label>Feedback form link<input name="formUrl" type="url" required placeholder="https://forms.gle/..."></label><div class="wide form-actions"><p class="mvp-notice wide">A mission preview is visible only in this browser session. EZ does not publish missions, record submissions or award credits yet.</p><button class="primary" type="submit">Create preview →</button></div></form></section>
-</div></main><dialog id="dialog"><button id="close" class="close">×</button><div id="detail"></div></dialog><div id="toast" class="toast" role="status"></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d10">
+  <title>EZ — Product testing, in motion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head>
+<body class="is-landing">
+  <section id="auth-screen" class="auth-screen" aria-labelledby="auth-title" hidden>
+    <div class="auth-card">
+      <a class="auth-brand" href="#" data-view-link="landing" aria-label="EZ home">
+        <span class="brand-mark">e<span>.</span></span>
+        <span class="brand-name">ez<small>PLAYTEST NETWORK</small></span>
+      </a>
+      <div class="auth-kicker"><span class="status-dot"></span> EARLY ACCESS</div>
+      <h1 id="auth-title">Sign in to EZ</h1>
+      <p>Sign in to preview the mission workflow. Live testing, feedback review and credits are not connected yet.</p>
+      <div class="auth-actions">
+        <button type="button" class="auth-provider" id="login-github">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8a8.2 8.2 0 0 0-2.6 16c.4.1.6-.2.6-.4v-1.5c-2.4.5-2.9-1-2.9-1-.4-1-.9-1.2-.9-1.2-.8-.5.1-.5.1-.5.9.1 1.3.9 1.3.9.8 1.3 2 1 2.5.8.1-.5.3-.9.5-1.1-1.9-.2-3.9-1-3.9-4.1 0-.9.3-1.6.9-2.2-.1-.2-.4-1.1.1-2.2 0 0 .7-.2 2.3.9a8 8 0 0 1 4.2 0c1.6-1.1 2.3-.9 2.3-.9.5 1.1.2 2 .1 2.2.6.6.9 1.3.9 2.2 0 3.1-1.9 3.9-3.8 4.1.3.3.6.8.6 1.5v2.1c0 .2.2.5.6.4a8.2 8.2 0 0 0-2.6-16Z"/></svg>
+          Continue with GitHub
+        </button>
+        <button type="button" class="auth-provider" id="login-google" hidden>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M18 10.2c0-.6-.1-1.2-.2-1.8h-7.7v3.2h4.4a3.8 3.8 0 0 1-1.6 2.5v2.1h2.7c1.6-1.5 2.4-3.6 2.4-6ZM10.1 18c2.2 0 4-.7 5.4-1.8l-2.7-2.1c-.7.5-1.6.8-2.7.8-2.1 0-3.8-1.4-4.5-3.3H2.8v2.2A8.1 8.1 0 0 0 10.1 18Zm-4.5-6.4a4.9 4.9 0 0 1 0-3.1V6.3H2.8a8.2 8.2 0 0 0 0 7.3l2.8-2Zm4.5-6.9c1.2 0 2.3.4 3.1 1.3l2.3-2.3A7.8 7.8 0 0 0 10.1 2a8.1 8.1 0 0 0-7.3 4.3l2.8 2.2c.7-2 2.4-3.4 4.5-3.4Z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+      <div id="auth-error" class="auth-error" role="alert" aria-live="polite"></div>
+      <button type="button" id="guest" class="auth-guest">Explore sample missions <span aria-hidden="true">→</span></button>
+      <p class="legal-auth-note">By continuing you agree to the <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms of use</a> and <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy policy</a>.</p>
+    </div>
+  </section>
+
+  <aside class="side" id="side" aria-label="Workspace navigation">
+    <a class="brand" href="#" data-view-link="landing" aria-label="EZ overview">
+      <span class="brand-mark">e<span>.</span></span>
+      <span class="brand-name">ez<small>PLAYTEST NETWORK</small></span>
+    </a>
+    <div class="side-label">WORKSPACE</div>
+    <nav class="side-nav">
+      <button class="nav" data-view-link="landing">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3 9 7-6 7 6v8H4V9Zm4 8v-5h6v5"/></svg><span>Overview</span>
+      </button>
+      <button class="nav active" data-view-link="dashboard">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 7 4v8l-7 4-7-4V6l7-4Zm0 0v8m7-4-7 4-7-4m7 4v8"/></svg><span>Mission control</span><i class="nav-indicator"></i>
+      </button>
+      <button class="nav" data-view-link="missions">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3"/><path d="M10 1v2m9 7h-2"/></svg><span>Mission board</span><small id="nav-count">07</small>
+      </button>
+      <button class="nav" data-view-link="create">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg><span>Create a preview</span>
+      </button>
+    </nav>
+    <div class="sidefoot">
+      <div class="side-status">
+        <span class="status-dot"></span>
+        <span><b>Preview mode</b><small>Sample data only</small></span>
+      </div>
+      <div class="profile">
+        <i>G</i>
+        <span><b>Guest</b><small>EZ tester</small></span>
+      </div>
+      <nav class="legal-side-links" aria-label="Legal">
+        <a href="privacy.html">Privacy</a><a href="terms.html">Terms</a>
+      </nav>
+    </div>
+  </aside>
+  <button type="button" class="side-scrim" id="side-scrim" aria-label="Close navigation" tabindex="-1"></button>
+
+  <main>
+    <header class="app-header">
+      <button id="menu" class="menu" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="side">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <div class="crumb"><span>EZ</span><i>/</i><b id="crumb">MISSION CONTROL</b></div>
+      <div class="top">
+        <span class="live"><i class="status-dot"></i> MVP PREVIEW</span>
+        <div class="credits">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 1.8 5.2L17 9l-5.2 1.8L10 16l-1.8-5.2L3 9l5.2-1.8L10 2Z"/><path d="m16 13 .8 2.2L19 16l-2.2.8L16 19l-.8-2.2L13 16l2.2-.8L16 13Z"/></svg>
+          <span>DEMO CREDITS<b id="balance">—</b></span>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <section class="view show lp-page" data-page="landing" aria-labelledby="lp-title">
+        <nav class="lp-topbar" aria-label="Landing page">
+          <a class="lp-brand" href="#" data-view-link="landing"><span class="brand-mark">e<span>.</span></span><span>EZ</span></a>
+          <div class="lp-top-guest" id="landing-guest-actions">
+            <a class="lp-link" href="#" data-view-link="missions">Explore missions</a>
+            <button type="button" class="lp-secondary" id="landing-sign-in">Sign in</button>
+          </div>
+          <div class="lp-top-user" id="landing-user-actions" hidden>
+            <span id="landing-first-name"></span>
+            <button type="button" class="lp-secondary" data-view-link="dashboard">Open mission control</button>
+          </div>
+        </nav>
+
+        <div class="lp-content">
+          <section class="lp-hero">
+            <div class="lp-hero-copy">
+              <div class="eyebrow"><span class="status-dot"></span> PRODUCT DISCOVERY NETWORK <span class="eyebrow-note">EARLY ACCESS</span></div>
+              <h1 id="lp-title">Find the moment users get stuck.</h1>
+              <p>EZ helps teams shape better products through focused testing missions. Explore sample briefs or preview a mission of your own.</p>
+              <div class="lp-hero-actions">
+                <button type="button" class="lp-primary" id="landing-create">Create a mission preview <span aria-hidden="true">↗</span></button>
+                <a class="lp-link" href="#" data-view-link="missions">Explore mission briefs <span aria-hidden="true">→</span></a>
+              </div>
+              <div class="lp-proofline"><span class="proof-mark">i</span><span>Early-access prototype. Mission previews stay in this browser.</span></div>
+            </div>
+
+            <article class="lp-product-shell" aria-label="Live mission brief preview">
+              <div class="lp-window-bar">
+                <span class="window-controls" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span>MISSION BOARD <i>/</i> LIVE BRIEF</span>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10m-4-4 4 4-4 4"/></svg>
+              </div>
+              <div class="lp-preview">
+                <div class="lp-preview-overline"><span><i class="status-dot"></i> LIVE MISSION</span><span>10 MIN</span></div>
+                <div class="lp-preview-company"><span class="lp-preview-logo">G</span><span><b>GitHub Digest</b><small>Developer tools · Live product</small></span></div>
+                <h2>Try GitHub Digest and tell us what’s unclear</h2>
+                <p>A real product by a solo founder. Does it make sense in 30 seconds?</p>
+                <div class="lp-preview-divider"></div>
+                <div class="lp-preview-facts">
+                  <div><small>FORMAT</small><b>Website</b></div>
+                  <div><small>SPOTS</small><b>5 listed</b></div>
+                  <div><small>CREDITS</small><b>Not connected</b></div>
+                </div>
+                <button class="lp-preview-action" type="button" data-open="githubdigest">Inspect mission brief <span aria-hidden="true">↗</span></button>
+              </div>
+              <div class="lp-preview-caption"><span class="caption-line"></span> Live product brief · Feedback opens outside EZ</div>
+            </article>
+          </section>
+
+          <section class="lp-scope" aria-label="What is currently available">
+            <div><span class="scope-label">AVAILABLE NOW</span><b>Browse sample mission briefs</b></div>
+            <div><span class="scope-label">PREVIEW ONLY</span><b>Create a temporary mission draft</b></div>
+            <div><span class="scope-label">NOT CONNECTED</span><b>Tester matching, reviews and rewards</b></div>
+          </section>
+
+          <section class="lp-section lp-how">
+            <div class="lp-section-heading">
+              <div class="eyebrow">HOW EZ IS DESIGNED TO WORK</div>
+              <h2>A clearer path from idea to insight.</h2>
+              <p>The current preview shows the shape of the workflow—without pretending the live marketplace is here yet.</p>
+            </div>
+            <ol class="lp-steps">
+              <li><span class="lp-number">01</span><div><h3>Write a focused brief</h3><p>Describe the product, audience, task and feedback you need. Mission creation is a local preview.</p><span class="step-state">PREVIEW AVAILABLE</span></div></li>
+              <li><span class="lp-number">02</span><div><h3>Meet the right testers</h3><p>Matching and active tester recruitment are planned, but are not connected yet.</p><span class="step-state is-pending">NOT CONNECTED</span></div></li>
+              <li><span class="lp-number">03</span><div><h3>Learn from real feedback</h3><p>Feedback review and reports are not part of this prototype. Live product links open externally.</p><span class="step-state is-pending">NOT CONNECTED</span></div></li>
+            </ol>
+          </section>
+
+          <section class="lp-bottom-cta">
+            <div><span class="eyebrow">START WITH A BRIEF</span><h2>See what a good test can ask.</h2></div>
+            <a class="lp-cta-link" href="#" data-view-link="missions">Browse sample missions <span aria-hidden="true">→</span></a>
+          </section>
+
+          <footer class="lp-footer">
+            <span>EZ is an early-access prototype. Sample credits have no cash value and cannot be earned, spent or redeemed.</span>
+            <nav class="legal-landing-links" aria-label="Legal and contact">
+              <a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="mailto:sigmaboy789265@gmail.com">Contact</a>
+            </nav>
+            <b class="footer-wordmark">EZ<span>.</span></b>
+          </footer>
+        </div>
+      </section>
+
+      <section class="view" data-page="dashboard" aria-labelledby="dashboard-title">
+        <div class="heading">
+          <div><div class="eyebrow"><span class="status-dot"></span><span id="today"></span> <i>/</i> YOUR WORKSPACE</div><h1 id="dashboard-title">Mission control<span>.</span></h1><p>A focused view of testing briefs and your own temporary previews.</p></div>
+          <button class="outline" type="button" data-view-link="missions">Browse mission board <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="dashboard">
+          <div class="dashboard-main">
+            <div class="sect"><div><span class="section-index">01</span><h2>Featured missions</h2><p>One live product brief and a set of illustrative samples.</p></div><button type="button" data-view-link="missions">VIEW ALL <span aria-hidden="true">→</span></button></div>
+            <div class="cards" id="featured"></div>
+            <div class="sect howtitle"><div><span class="section-index">02</span><h2>Product availability</h2><p>What this early-access preview currently supports.</p></div><span class="quiet-label">MVP STATUS</span></div>
+            <div class="how">
+              <div class="availability-step"><span class="availability-number">01</span><b>Mission previews</b><small>Temporary drafts in this browser.</small><span class="availability-state">AVAILABLE</span></div>
+              <span class="availability-connector" aria-hidden="true"></span>
+              <div class="availability-step"><span class="availability-number">02</span><b>Tester matching</b><small>Recruitment is not connected.</small><span class="availability-state is-pending">PLANNED</span></div>
+              <span class="availability-connector" aria-hidden="true"></span>
+              <div class="availability-step"><span class="availability-number">03</span><b>Feedback review</b><small>Reports are not connected.</small><span class="availability-state is-pending">PLANNED</span></div>
+            </div>
+          </div>
+          <aside class="right" aria-label="Preview status">
+            <div class="wallet">
+              <div class="panel-overline"><span>ACCOUNT STATUS</span><span class="status-pill">PREVIEW</span></div>
+              <strong id="wallet">Demo only</strong>
+              <p>Demo credits are illustrative. No balance can be earned, spent or redeemed.</p>
+              <div class="wallet-rule"></div>
+              <div class="wallet-foot"><span>Credit ledger</span><b>Not connected</b></div>
+            </div>
+            <div class="activity">
+              <div class="panel-overline"><span>RECENT ACTIVITY</span><span class="activity-mark" aria-hidden="true">—</span></div>
+              <div class="empty-activity"><span class="empty-activity-mark" aria-hidden="true">↗</span><b>No activity to show</b><p>Applications, submissions and founder reviews are not connected yet.</p></div>
+            </div>
+            <div class="quote"><span class="quote-label">A NOTE ON THIS PREVIEW</span><b>Sample missions only.</b><p>Live testing, matching and a marketplace are not available yet.</p></div>
+          </aside>
+        </div>
+        <footer class="foot"><span>EZ / PRODUCT TESTING NETWORK</span><span>MADE FOR BETTER <i>✳</i></span></footer>
+      </section>
+
+      <section class="view" data-page="missions" aria-labelledby="missions-title">
+        <div class="heading">
+          <div><div class="eyebrow"><span class="status-dot"></span> PREVIEW MISSIONS <i>/</i> <span id="open-count">07</span> BRIEFS</div><h1 id="missions-title">Mission board<span>.</span></h1><p>Explore one live product brief and sample missions. Rewards and spots are illustrative where noted.</p></div>
+          <div class="total"><small>BRIEFS IN PREVIEW</small><b><span id="total-count">07</span><i>MISSIONS</i></b></div>
+        </div>
+        <div class="toolbar">
+          <div class="filters" role="group" aria-label="Filter missions by type">
+            <button class="filter selected" type="button" data-filter="All">All missions <i><span id="filter-count">07</span></i></button>
+            <button class="filter" type="button" data-filter="Website">Websites</button>
+            <button class="filter" type="button" data-filter="Mobile app">Mobile apps</button>
+            <button class="filter" type="button" data-filter="Prototype">Prototypes</button>
+          </div>
+          <button type="button" class="sort" id="sort"><span class="sort-icon" aria-hidden="true">↕</span><span id="sort-label">NEWEST PREVIEWS</span><span aria-hidden="true">⌄</span></button>
+        </div>
+        <div class="cards board" id="all" aria-live="polite"></div>
+        <footer class="foot"><span>EZ / PRODUCT TESTING NETWORK</span><span>MADE FOR BETTER <i>✳</i></span></footer>
+      </section>
+
+      <section class="view" data-page="create" aria-labelledby="create-title">
+        <div class="heading">
+          <div><div class="eyebrow"><span class="status-dot"></span> LOCAL PREVIEW</div><h1 id="create-title">Shape a mission<span>.</span></h1><p>This draft stays in this tab only. It will not be published or saved.</p></div>
+        </div>
+        <form id="create-form" class="create-form" novalidate>
+          <div class="form-intro"><span class="form-step">01 <i>/</i> BRIEF DETAILS</span><p>Keep the task focused. A clear brief helps testers know what to look for.</p></div>
+          <label>Company name<input name="company" required autocomplete="organization"></label>
+          <label>Mission title<input name="title" required maxlength="160"></label>
+          <label class="wide">Short description<textarea name="description" rows="2" required maxlength="1000"></textarea></label>
+          <label class="wide">Target audience<input name="audience" required></label>
+          <label>Type<select name="type" required><option value="" selected disabled>Choose a type</option><option>Website</option><option>Mobile app</option><option>Prototype</option></select></label>
+          <label>Duration<input name="duration" placeholder="10 min" required></label>
+          <label>Illustrative demo reward <span class="label-note">Not redeemable</span><input name="reward" type="number" min="1" step="1" value="10" required></label>
+          <label>Spots <span class="label-note">Preview only</span><input name="spots" type="number" min="1" step="1" required></label>
+          <label class="wide">Testing task<textarea name="brief" rows="4" required maxlength="3000"></textarea></label>
+          <label class="wide">Desired feedback<textarea name="feedback" rows="3" required maxlength="3000"></textarea></label>
+          <label>Task objective<input name="goal" required></label>
+          <label>Platform<input name="platform" required></label>
+          <label>Product link<input name="link" type="url" required placeholder="https://yourproduct.com" autocomplete="url"></label>
+          <label>Feedback form link<input name="formUrl" type="url" required placeholder="https://forms.gle/..." autocomplete="url"></label>
+          <div class="wide form-actions">
+            <p class="mvp-notice"><span class="notice-mark">i</span>A mission preview is visible only in this browser session. EZ does not publish missions, record submissions or award credits yet.</p>
+            <button class="primary" type="submit">Create preview <span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="dialog" aria-labelledby="dialog-heading">
+    <button id="close" class="close" type="button" aria-label="Close mission details">×</button>
+    <div id="detail"></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

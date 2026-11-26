@@ -194,10 +194,10 @@ function missionCard(mission) {
   const spotLabel = mission.spots > 0
     ? `${mission.spots} spots${isLive ? "" : " listed"}`
     : "No spots available";
-  const sourceLabel = isLive ? "LIVE" : isPreview ? "PREVIEW ONLY" : "SAMPLE ONLY";
+  const sourceLabel = isLive ? "LIVE BRIEF" : isPreview ? "YOUR PREVIEW" : "SAMPLE ONLY";
   const actionLabel = mission.spots > 0
-    ? (isLive ? "VIEW MISSION ↗" : isPreview ? "OPEN PREVIEW ↗" : "VIEW SAMPLE ↗")
-    : "NO SPOTS AVAILABLE";
+    ? (isLive ? "View mission" : isPreview ? "Open preview" : "View sample")
+    : "No spots available";
 
   return `<article class="mission-card">
     <div class="mission-top">
@@ -205,19 +205,24 @@ function missionCard(mission) {
         <i class="logo ${escapeHtml(mission.tone)}">${escapeHtml(mission.logo)}</i>
         <span><b class="company">${escapeHtml(mission.company)}</b><small class="sector">${escapeHtml(mission.sector)}</small></span>
       </div>
-      ${isLive ? "" : `<b class="reward">✳ ${escapeHtml(mission.reward)} DEMO CR</b>`}
     </div>
-    <div class="mission-source-badge">${sourceLabel}</div>
+    <div class="mission-card-status">
+      <span class="mission-source-badge ${isLive ? "is-live" : isPreview ? "is-preview" : "is-sample"}">${sourceLabel}</span>
+      ${isLive
+        ? '<span class="reward reward-muted">Credits not connected</span>'
+        : `<span class="reward">✳ ${escapeHtml(mission.reward)} demo credits<small>Illustrative only</small></span>`}
+    </div>
     <h3 class="mission-title">${escapeHtml(mission.title)}</h3>
     <p class="mission-desc">${escapeHtml(mission.description)}</p>
     <div class="mission-meta">
       <small class="tag">${escapeHtml(mission.type)}</small>
-      <span class="duration">◷ &nbsp;${escapeHtml(mission.duration)}</span>
+      <span class="duration"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.4 1.5"/></svg>${escapeHtml(mission.duration)}</span>
+      <span class="mission-difficulty">Difficulty <b>Not rated</b></span>
     </div>
     <div class="mission-bottom">
       <span class="spots">${escapeHtml(spotLabel)}</span>
       ${canDelete ? `<button class="mission-delete" data-delete="${escapeHtml(mission.id)}">DELETE PREVIEW</button>` : ""}
-      <button class="mission-action" data-open="${escapeHtml(mission.id)}" ${mission.spots <= 0 ? "disabled" : ""}>${actionLabel}</button>
+      <button class="mission-action" data-open="${escapeHtml(mission.id)}" ${mission.spots <= 0 ? "disabled" : ""}>${actionLabel}<span aria-hidden="true">↗</span></button>
     </div>
   </article>`;
 }
@@ -273,6 +278,8 @@ function navigate(pageName) {
   document.body.classList.toggle("is-landing", pageName === "landing");
   document.getElementById("crumb").textContent = pageLabels[pageName];
   document.getElementById("side").classList.remove("open");
+  document.getElementById("menu").setAttribute("aria-expanded", "false");
+  document.getElementById("menu").setAttribute("aria-label", "Open navigation");
 
   if (wasLanding || pageName === "landing") {
     window.scrollTo(0, 0);
@@ -316,18 +323,20 @@ function openMission(missionId) {
     ? `
       <div class="dialog-detail"><small>TASK</small><strong>${escapeHtml(mission.goal)}</strong></div>
       <div class="dialog-detail"><small>TIME / PLATFORM</small><strong>${escapeHtml(mission.duration)} · ${escapeHtml(mission.platform)}</strong></div>
-      <div class="dialog-detail"><small>SPOTS</small><strong>${escapeHtml(mission.spots)}</strong></div>`
+      <div class="dialog-detail"><small>SPOTS</small><strong>${escapeHtml(mission.spots)}</strong></div>
+      <div class="dialog-detail"><small>DIFFICULTY</small><strong>Not rated</strong></div>`
     : `
       <div class="dialog-detail"><small>TARGET AUDIENCE</small><strong>${escapeHtml(mission.audience)}</strong></div>
       <div class="dialog-detail"><small>TASK</small><strong>${escapeHtml(mission.goal)}</strong></div>
       <div class="dialog-detail"><small>DESIRED FEEDBACK</small><strong>${escapeHtml(mission.feedback)}</strong></div>
       <div class="dialog-detail"><small>TIME / PLATFORM</small><strong>${escapeHtml(mission.duration)} · ${escapeHtml(mission.platform)}</strong></div>
       <div class="dialog-detail"><small>SPOTS LISTED</small><strong>${escapeHtml(mission.spots)}</strong></div>
-      <div class="dialog-detail"><small>ILLUSTRATIVE REWARD</small><strong>${escapeHtml(mission.reward)} demo credits; not redeemable</strong></div>`;
+      <div class="dialog-detail"><small>ILLUSTRATIVE REWARD</small><strong>${escapeHtml(mission.reward)} demo credits; not redeemable</strong></div>
+      <div class="dialog-detail"><small>DIFFICULTY</small><strong>Not rated</strong></div>`;
 
   document.getElementById("detail").innerHTML = `
     <div class="dialog-kicker">${isLive ? "LIVE MISSION" : mission.kind === "sample" ? "SAMPLE BRIEF" : "MISSION PREVIEW"}</div>
-    <h2 class="dialog-title">${escapeHtml(mission.title)}</h2>
+    <h2 class="dialog-title" id="dialog-heading">${escapeHtml(mission.title)}</h2>
     <div class="dialog-company">${escapeHtml(mission.company)} · ${escapeHtml(mission.sector)}</div>
     <p class="dialog-desc">${escapeHtml(mission.brief)}</p>
     <div class="dialog-details">
@@ -604,8 +613,22 @@ dialog.addEventListener("click", event => {
     dialog.close();
   }
 });
-document.getElementById("menu").addEventListener("click", () => {
-  document.getElementById("side").classList.toggle("open");
+const sideMenu = document.getElementById("side");
+const menuButton = document.getElementById("menu");
+const sideScrim = document.getElementById("side-scrim");
+function setMobileNavigationOpen(open) {
+  sideMenu.classList.toggle("open", open);
+  menuButton.setAttribute("aria-expanded", String(open));
+  menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+}
+menuButton.addEventListener("click", () => {
+  setMobileNavigationOpen(!sideMenu.classList.contains("open"));
+});
+sideScrim.addEventListener("click", () => setMobileNavigationOpen(false));
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    setMobileNavigationOpen(false);
+  }
 });
 createForm.addEventListener("submit", event => {
   event.preventDefault();
