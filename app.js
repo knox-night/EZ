@@ -13,6 +13,24 @@ const pageLabels = {
 };
 const sampleMissions = [
   {
+    id: "githubdigest",
+    kind: "live",
+    company: "GitHub Digest",
+    sector: "Developer tools · Live product",
+    title: "Try GitHub Digest and tell us what's unclear",
+    description: "A real product by a solo founder. Does it make sense in 30 seconds?",
+    type: "Website",
+    duration: "10 min",
+    spots: 5,
+    logo: "G",
+    tone: "teal",
+    brief: "Open githubdigest.space, work out what it does without any help, and try the main feature. Then fill in the short feedback form. Be honest: tell us where you got confused or stopped.",
+    goal: "Understand the product and try its main feature",
+    platform: "Web · Desktop or mobile",
+    link: "https://githubdigest.space",
+    formUrl: "https://docs.google.com/forms/d/e/1FAIpQLScsoBb26IHhSDFot_jkbD_VkEF9Rdsl3a4cHoAcY3DexW1pGQ/viewform"
+  },
+  {
     id: "orbit",
     kind: "sample",
     company: "Orbit Notes",
@@ -170,14 +188,15 @@ function getVisibleMissions() {
 }
 
 function missionCard(mission) {
+  const isLive = mission.kind === "live";
   const isPreview = mission.kind === "preview";
   const canDelete = isPreview && currentUser && mission.ownerId === currentUser.id;
   const spotLabel = mission.spots > 0
-    ? `${mission.spots} spots listed`
+    ? `${mission.spots} spots${isLive ? "" : " listed"}`
     : "No spots available";
-  const sourceLabel = isPreview ? "PREVIEW ONLY" : "SAMPLE ONLY";
+  const sourceLabel = isLive ? "LIVE" : isPreview ? "PREVIEW ONLY" : "SAMPLE ONLY";
   const actionLabel = mission.spots > 0
-    ? (isPreview ? "OPEN PREVIEW ↗" : "VIEW SAMPLE ↗")
+    ? (isLive ? "VIEW MISSION ↗" : isPreview ? "OPEN PREVIEW ↗" : "VIEW SAMPLE ↗")
     : "NO SPOTS AVAILABLE";
 
   return `<article class="mission-card">
@@ -186,7 +205,7 @@ function missionCard(mission) {
         <i class="logo ${escapeHtml(mission.tone)}">${escapeHtml(mission.logo)}</i>
         <span><b class="company">${escapeHtml(mission.company)}</b><small class="sector">${escapeHtml(mission.sector)}</small></span>
       </div>
-      <b class="reward">✳ ${escapeHtml(mission.reward)} DEMO CR</b>
+      ${isLive ? "" : `<b class="reward">✳ ${escapeHtml(mission.reward)} DEMO CR</b>`}
     </div>
     <div class="mission-source-badge">${sourceLabel}</div>
     <h3 class="mission-title">${escapeHtml(mission.title)}</h3>
@@ -216,7 +235,11 @@ function render() {
     : missions.filter(mission => mission.type === activeFilter);
   const sorted = sortMode === "newest"
     ? filtered
-    : filtered.slice().sort((first, second) => second.reward - first.reward);
+    : filtered.slice().sort((first, second) => {
+      if (first.kind === "live") return second.kind === "live" ? 0 : -1;
+      if (second.kind === "live") return 1;
+      return second.reward - first.reward;
+    });
 
   document.getElementById("featured").innerHTML = featured.map(missionCard).join("");
   document.getElementById("all").innerHTML = sorted.length
@@ -273,30 +296,42 @@ function openMission(missionId) {
     return;
   }
 
+  const isLive = mission.kind === "live";
   const links = [];
-  if (mission.link) {
+  if (mission.link && (!isLive || mission.link.startsWith("https://"))) {
     links.push(`<a class="mission-link" href="${escapeHtml(mission.link)}" target="_blank" rel="noopener noreferrer">Open product ↗</a>`);
   }
-  if (mission.formUrl) {
-    links.push(`<a class="mission-link" href="${escapeHtml(mission.formUrl)}" target="_blank" rel="noopener noreferrer">Open feedback form ↗</a>`);
+  if (isLive && (!mission.formUrl || !mission.formUrl.startsWith("https://"))) {
+    links.push('<button type="button" class="mission-link" disabled>Give feedback ↗</button>');
+  } else if (mission.formUrl) {
+    links.push(`<a class="mission-link" href="${escapeHtml(mission.formUrl)}" target="_blank" rel="noopener noreferrer">${isLive ? "Give feedback ↗" : "Open feedback form ↗"}</a>`);
   }
 
-  const prototypeNote = mission.kind === "sample"
-    ? "This is an example brief only. EZ has no live product, application, feedback submission or reward for it."
-    : "These links open outside EZ. This preview is not saved or published; EZ cannot record submissions, conduct reviews or award credits.";
-
-  document.getElementById("detail").innerHTML = `
-    <div class="dialog-kicker">${mission.kind === "sample" ? "SAMPLE BRIEF" : "MISSION PREVIEW"}</div>
-    <h2 class="dialog-title">${escapeHtml(mission.title)}</h2>
-    <div class="dialog-company">${escapeHtml(mission.company)} · ${escapeHtml(mission.sector)}</div>
-    <p class="dialog-desc">${escapeHtml(mission.brief)}</p>
-    <div class="dialog-details">
+  const prototypeNote = isLive
+    ? "Early access: your feedback goes to the founder through a Google Form. Credits are not live yet."
+    : mission.kind === "sample"
+      ? "This is an example brief only. EZ has no live product, application, feedback submission or reward for it."
+      : "These links open outside EZ. This preview is not saved or published; EZ cannot record submissions, conduct reviews or award credits.";
+  const dialogDetails = isLive
+    ? `
+      <div class="dialog-detail"><small>TASK</small><strong>${escapeHtml(mission.goal)}</strong></div>
+      <div class="dialog-detail"><small>TIME / PLATFORM</small><strong>${escapeHtml(mission.duration)} · ${escapeHtml(mission.platform)}</strong></div>
+      <div class="dialog-detail"><small>SPOTS</small><strong>${escapeHtml(mission.spots)}</strong></div>`
+    : `
       <div class="dialog-detail"><small>TARGET AUDIENCE</small><strong>${escapeHtml(mission.audience)}</strong></div>
       <div class="dialog-detail"><small>TASK</small><strong>${escapeHtml(mission.goal)}</strong></div>
       <div class="dialog-detail"><small>DESIRED FEEDBACK</small><strong>${escapeHtml(mission.feedback)}</strong></div>
       <div class="dialog-detail"><small>TIME / PLATFORM</small><strong>${escapeHtml(mission.duration)} · ${escapeHtml(mission.platform)}</strong></div>
       <div class="dialog-detail"><small>SPOTS LISTED</small><strong>${escapeHtml(mission.spots)}</strong></div>
-      <div class="dialog-detail"><small>ILLUSTRATIVE REWARD</small><strong>${escapeHtml(mission.reward)} demo credits; not redeemable</strong></div>
+      <div class="dialog-detail"><small>ILLUSTRATIVE REWARD</small><strong>${escapeHtml(mission.reward)} demo credits; not redeemable</strong></div>`;
+
+  document.getElementById("detail").innerHTML = `
+    <div class="dialog-kicker">${isLive ? "LIVE MISSION" : mission.kind === "sample" ? "SAMPLE BRIEF" : "MISSION PREVIEW"}</div>
+    <h2 class="dialog-title">${escapeHtml(mission.title)}</h2>
+    <div class="dialog-company">${escapeHtml(mission.company)} · ${escapeHtml(mission.sector)}</div>
+    <p class="dialog-desc">${escapeHtml(mission.brief)}</p>
+    <div class="dialog-details">
+      ${dialogDetails}
     </div>
     ${links.length ? `<div class="dialog-actions">${links.join("")}</div>` : ""}
     <p class="mission-note">${escapeHtml(prototypeNote)}</p>`;
